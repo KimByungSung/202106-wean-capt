@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+
+<head>
+	<base href="/html/" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="./js/jquery-3.5.1.min.js"></script>
+	<script src="./js/common.js"></script>
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+	<div class="bg-alpha"></div>
+
+
+	<div id="auto-caption-popup">
+
+		<header class="wac-header">
+			<h1 class="wac-h1">브리핑영상.mp4</h1>
+			<button type="button" class="wac-pop-close" title="닫기">닫기</button>
+		</header>
+
+		<section class="wac-body">
+
+			<div class="wac-editor">
+
+				<div class="add-row">
+					<div class="section-title">
+						자막 언어를 선택해 주세요.
+					</div>
+					<select class="add-select-lang">
+						<option selected>한국어</option>
+						<option>영어</option>
+						<option>중국어</option>
+						<option>일본어</option>
+					</select>
+				</div><!-- add-row end -->
+
+				<div class="add-row">
+					<div class="section-title">
+						자막 추가 방법을 선택해 주세요.
+					</div>
+
+					<button type="button" class="btn-add-subt upload-file" onclick="subpopOpen('.subt-upload')">
+						<div class="icon-btn-add-subt"><img src="./image/icon-upload-file.svg"></div>
+						업로드 파일<span>.srt, .ass, .vtt 포멧의 파일을 첨부합니다.</span>
+					</button>
+					<button type="button" class="btn-add-subt manual-edting" onclick="location.href='./editing.html'">
+						<div class="icon-btn-add-subt"><img src="./image/icon-manual-edting.svg"></div>
+						수동 편집<span>자막편집기를 이용하여 입력합니다.</span>
+					</button>
+					<button type="button" class="btn-add-subt auto-subt">
+						<div class="icon-btn-add-subt"><img src="./image/icon-auto-subt.svg"></div>
+						자동 자막<span>영상의 음성을 인식하여 자막을 생성합니다.</span>
+
+						<div class="auto-subt-info">
+							자동 자막은 생성시간이 다소 소요되어, 잠시 후 자막언어 (자동생성)으로 편집 진행하시기 바랍니다.
+						</div>
+
+					</button>
+
+
+
+				</div><!-- add-row end -->
+
+			</div><!-- wac-editor end -->
+
+			<div class="wac-player disabled">
+				<div class="wac-video-wrap">
+
+					<div class="wac-video-container">
+						<video class="wac-video">
+							<source src="" type="video/mp4">
+						</video>
+						<div class="wac-subtitle-wrap">
+
+						</div>
+					</div><!-- wac-video-container end -->
+
+					<div class="wac-controls">
+
+						<div class="wac-controls-progress-row">
+							<progress min="0" max="100" value="50" class="wac-controls-progress">50%</progress>
+						</div>
+
+						<div class="wac-controls-button-row">
+							<div class="wac-controls-left">
+								<input type="text" value="0:10:00" maxlength="7" class="wac-controls-current-time">
+								<div class="wac-controls-time-div">/</div>
+								<div class="wac-controls-running-time">0:50:00</div>
+								<div class="clear-div"></div>
+							</div><!-- wac-controls-left end -->
+
+							<div class="wac-controls-center">
+								<button type="button" class="wac-controls-btn play">play</button>
+								<button type="button" class="wac-controls-btn rewind">prev</button>
+								<button type="button" class="wac-controls-btn forward">next</button>
+
+								<button type="button" class="wac-controls-btn sound">sound</button>
+								<input type="range" title="volume" min="0" max="1" step="0.1" value="0.7" class="wac-controls-vol-bar">
+							</div><!-- wac-controls-center end -->
+
+							<div class="wac-controls-right">
+								<button type="button" class="wac-controls-speed">x 1.0</button>
+								<div class="wac-controls-speed-select">
+									<button type="button" class="wac-controls-speed-option">x 2.0</button>
+									<button type="button" class="wac-controls-speed-option">x 1.8</button>
+									<button type="button" class="wac-controls-speed-option">x 1.6</button>
+									<button type="button" class="wac-controls-speed-option">x 1.4</button>
+									<button type="button" class="wac-controls-speed-option">x 1.2</button>
+									<button type="button" class="wac-controls-speed-option selected">x 1.0</button>
+									<button type="button" class="wac-controls-speed-option">x 0.8</button>
+									<button type="button" class="wac-controls-speed-option">x 0.5</button>
+								</div>
+							</div><!-- wac-controls-right end -->
+
+							<div class="clear-div"></div>
+						</div><!-- wac-controls-button-row end -->
+
+
+					</div><!-- wac-controls end -->
+
+
+				</div><!-- wac-video-wrap end -->
+
+				<div class="wac-player-option">
+					<input type="checkbox" id="ch01"><label for="ch01">자막 작성시 재생 멈춤</label>
+				</div>
+			</div><!-- wac-player end -->
+
+			<div class="clear-div"></div>
+
+		</section><!-- wac-body end -->
+
+		<section class="wac-timeline disabled">
+
+			<div class="wac-timeline-top">
+
+				<div class="zoom-area">
+
+					<div class="zoom-container">
+						<button type="button" class="btn-zoom zoom-in"></button>
+
+						<div class="zoom-control-bar" name="zoom-2">
+							<div class="bar-range"></div>
+							<div class="bar-dot"></div>
+							<div class="bar-point p00"></div>
+							<div class="bar-point p01"></div>
+							<div class="bar-point p02"></div>
+							<div class="bar-point p03"></div>
+							<div class="bar-point p04"></div>
+						</div><!-- zoom-control-bar end -->
+
+						<button type="button" class="btn-zoom zoom-out"></button>
+					</div><!-- zoom-container end -->
+
+				</div><!-- zoom-area end -->
+
+
+
+				<div class="clear-div"></div>
+			</div><!-- wac-timeline-top end -->
+
+
+
+
+
+			<div class="col-left">
+				<div class="row-left row-timeline">타임라인</div>
+				<div class="row-left row-subt">자막</div>
+				<div class="row-left row-audio">음원</div>
+			</div><!-- col-left end -->
+
+			<div class="col-right">
+
+				<div class="row-right row-timeline"></div><!-- row-right row-timeline end -->
+
+				<div class="row-right row-subt"></div><!-- row-right row-subt end -->
+
+				<div class="row-right row-audio"></div><!-- row-right row-audio end -->
+
+			</div><!-- col-right end -->
+
+			<div class="clear-div"></div>
+
+
+
+
+		</section><!-- wac-timeline end -->
+
+	</div><!-- auto-caption-popup end-->
+
+
+
+
+	<!-- 자막 업로드 팝업 -->
+	<div class="pop-modal subt-upload">
+
+		<div class="pop-modal-header">
+			<h3 class="pop-modal-h3">자막 업로드</h3>
+			<button type="button" class="btn-close-pop-modal" title="닫기" onclick="closepop('.subt-upload');">닫기</button>
+		</div>
+
+		<div class="pop-modal-body">
+			<div class="pop-modal-label">.srt, .ass, .vtt 포맷의 파일을 첨부합니다.</div>
+			<div class="pop-modal-input-row">
+				<input type="file" class="subt-upload-file">
+			</div>
+
+			<div class="pop-modal-bottom-btn-row">
+				<button type="button" class="btn-pop-modal-bottom submit">저장</button>
+				<button type="button" class="btn-pop-modal-bottom cancel">취소</button>
+			</div>
+
+		</div><!-- pop-modal-body end -->
+	</div><!-- pop-modal subt-upload end -->
+	<!-- 자막 업로드 팝업 end -->
+
+</body>
+
+</html>
