@@ -1,6 +1,11 @@
 import axios from 'axios';
 import xml from 'xml-to-json-promise';
 const decode = d => decodeURIComponent(Array.isArray(d) ? d[0] : d).replace(/\+/g, ' ');
+Number.prototype.pad = function (size) {
+  var s = String(this);
+  while (s.length < (size || 2)) s = '0' + s;
+  return s;
+};
 
 export default {
   methods: {
@@ -27,14 +32,29 @@ export default {
       //   return this.$api(url, data);
       //   // } else window.close();
       // }
-      return res.headers['content-type'] == 'text/xml' ? xml.xmlDataToJSON(res.data) : res.data;
+      if (res.headers['content-type'] == 'text/xml') {
+        const ret = xml.xmlDataToJSON(res.data);
+        if (ret.root && ret.root.ResultCode != '0000' && res.root.ResultMessage) {
+          await this.$alert(res.root.ResultMessage);
+          throw res.root.ResultMessage;
+        }
+        return ret
+      }
+      return res.data;
     },
     $alert(body, options) {
       return window.$vm.$children[0].alert(body, options);
     },
+    $toTime(ms) {
+      return `${Math.floor(ms / 3600000)}:${Math.floor(ms % 3600000 / 60000)}:${Math.floor(ms % 60000 / 1000)}.${ms % 1000}`
+    },
+    $toMs(time) {
+      time = time.split(':');
+      return Math.round(time[0] * 3600000 + time[1] * 60000 + time[2] * 1000);
+    },
     $decode(d) {
-      if (Array.isArray(d)) d.forEach(d => { for (let k in d) d[k] = decode(d[k]).replace(/\+/g, ' ') });
-      else for (let k in d) d[k] = decode(d[k]).replace(/\+/g, ' ');
+      if (Array.isArray(d)) d.forEach(d => { for (let k in d) d[k] = decode(d[k]) });
+      else for (let k in d) d[k] = decode(d[k]);
       return d;
     },
   }

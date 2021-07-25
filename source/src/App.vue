@@ -3,7 +3,10 @@
     <div class="bg-alpha" :style="{ zIndex: popup ? 91 : 0 }"></div>
     <div id="auto-caption-popup">
       <header class="wac-header">
-        <h1 class="wac-h1">브리핑영상.mp4({{ language.name }})</h1>
+        <h1
+          class="wac-h1"
+          v-text="`${data.fileTitle || ''}(${languages[data.language]})`"
+        />
         <div class="wac-header-btn-wrap">
           <button type="button" class="btn-wac-header">
             <img
@@ -23,15 +26,21 @@
         <button type="button" class="wac-pop-close" title="닫기">닫기</button>
       </header>
       <section class="wac-body">
-        <div class="wac-editor" v-if="data == null">
+        <div class="wac-editor" v-if="!data.tracks">
           <div class="add-row">
             <div class="section-title">자막 언어를 선택해 주세요.</div>
-            <select class="add-select-lang" v-model="language">
+            <select
+              class="add-select-lang"
+              @change="
+                data.language = $event.target.value;
+                $forceUpdate();
+              "
+            >
               <option
-                :key="l.code"
-                v-for="l in languageList"
-                :value="l"
-                v-text="l.name"
+                :key="code"
+                v-for="(name, code) in languages"
+                :value="code"
+                v-text="name"
               />
             </select>
           </div>
@@ -51,14 +60,18 @@
             <button
               type="button"
               class="btn-add-subt manual-edting"
-              @click="data = {}"
+              @click="load(data.language)"
             >
               <div class="icon-btn-add-subt">
                 <img src="/html/image/icon-manual-edting.svg" />
               </div>
               수동 편집<span>자막편집기를 이용하여 입력합니다.</span>
             </button>
-            <button type="button" class="btn-add-subt auto-subt">
+            <button
+              @click="autocaption"
+              type="button"
+              class="btn-add-subt auto-subt"
+            >
               <div class="icon-btn-add-subt">
                 <img src="/html/image/icon-auto-subt.svg" />
               </div>
@@ -128,151 +141,37 @@
           </div>
           <!-- editor-top-btn end -->
           <section class="editor-row-wrap">
-            <div class="editor-row">
-              <div class="editor-header">
-                <div class="editor-header-time">
-                  <input
-                    type="text"
-                    value="0:00:00"
-                    maxlength="7"
-                    class="editor-time-stamp from"
-                  />
-                  &nbsp;&nbsp;─&nbsp;&nbsp;
-                  <input
-                    type="text"
-                    value="0:05:00"
-                    maxlength="7"
-                    class="editor-time-stamp to"
-                  />
+            <template v-for="(t, i) in tracks">
+              <div class="editor-row" :key="i">
+                <div class="editor-header">
+                  <div class="editor-header-time">
+                    <input
+                      type="text"
+                      value="0:00:00.000"
+                      maxlength="11"
+                      class="editor-time-stamp from"
+                    />
+                    &nbsp;&nbsp;─&nbsp;&nbsp;
+                    <input
+                      type="text"
+                      value="0:05:00"
+                      maxlength="7"
+                      class="editor-time-stamp to"
+                    />
+                  </div>
+                  <button type="button" class="btn-editor-subt-del"></button>
                 </div>
-                <button type="button" class="btn-editor-subt-del"></button>
-              </div>
-              <!-- editor-header end -->
-              <div class="editor-input">
-                <textarea class="editor-input-text"></textarea>
-              </div>
-            </div>
-            <!-- editor-row end -->
-            <div class="editor-add-row">
-              <div class="editor-add-row-bar"></div>
-              <button type="button" class="btn-add-row"></button>
-            </div>
-            <div class="editor-row">
-              <div class="editor-header">
-                <div class="editor-header-time">
-                  <input
-                    type="text"
-                    value="0:00:00"
-                    maxlength="7"
-                    class="editor-time-stamp from"
-                  />
-                  &nbsp;&nbsp;─&nbsp;&nbsp;
-                  <input
-                    type="text"
-                    value="0:05:00"
-                    maxlength="7"
-                    class="editor-time-stamp to"
-                  />
+                <!-- editor-header end -->
+                <div class="editor-input">
+                  <textarea class="editor-input-text"></textarea>
                 </div>
-                <button type="button" class="btn-editor-subt-del"></button>
               </div>
-              <!-- editor-header end -->
-              <div class="editor-input">
-                <textarea class="editor-input-text"></textarea>
+              <!-- editor-row end -->
+              <div :key="'bar' + i" class="editor-add-row">
+                <div class="editor-add-row-bar"></div>
+                <button type="button" class="btn-add-row"></button>
               </div>
-            </div>
-            <!-- editor-row end -->
-            <div class="editor-add-row">
-              <div class="editor-add-row-bar"></div>
-              <button type="button" class="btn-add-row"></button>
-            </div>
-            <div class="editor-row">
-              <div class="editor-header">
-                <div class="editor-header-time">
-                  <input
-                    type="text"
-                    value="0:00:00"
-                    maxlength="7"
-                    class="editor-time-stamp from"
-                  />
-                  &nbsp;&nbsp;─&nbsp;&nbsp;
-                  <input
-                    type="text"
-                    value="0:05:00"
-                    maxlength="7"
-                    class="editor-time-stamp to"
-                  />
-                </div>
-                <button type="button" class="btn-editor-subt-del"></button>
-              </div>
-              <!-- editor-header end -->
-              <div class="editor-input">
-                <textarea class="editor-input-text"></textarea>
-              </div>
-            </div>
-            <!-- editor-row end -->
-            <div class="editor-add-row">
-              <div class="editor-add-row-bar"></div>
-              <button type="button" class="btn-add-row"></button>
-            </div>
-            <div class="editor-row">
-              <div class="editor-header">
-                <div class="editor-header-time">
-                  <input
-                    type="text"
-                    value="0:00:00"
-                    maxlength="7"
-                    class="editor-time-stamp from"
-                  />
-                  &nbsp;&nbsp;─&nbsp;&nbsp;
-                  <input
-                    type="text"
-                    value="0:05:00"
-                    maxlength="7"
-                    class="editor-time-stamp to"
-                  />
-                </div>
-                <button type="button" class="btn-editor-subt-del"></button>
-              </div>
-              <!-- editor-header end -->
-              <div class="editor-input">
-                <textarea class="editor-input-text"></textarea>
-              </div>
-            </div>
-            <!-- editor-row end -->
-            <div class="editor-add-row">
-              <div class="editor-add-row-bar"></div>
-              <button type="button" class="btn-add-row"></button>
-            </div>
-            <div class="editor-row">
-              <div class="editor-header">
-                <div class="editor-header-time">
-                  <input
-                    type="text"
-                    value="0:00:00"
-                    maxlength="7"
-                    class="editor-time-stamp from"
-                  />
-                  &nbsp;&nbsp;─&nbsp;&nbsp;
-                  <input
-                    type="text"
-                    value="0:05:00"
-                    maxlength="7"
-                    class="editor-time-stamp to"
-                  />
-                </div>
-                <button type="button" class="btn-editor-subt-del"></button>
-              </div>
-              <!-- editor-header end -->
-              <div class="editor-input">
-                <textarea class="editor-input-text"></textarea>
-              </div>
-            </div>
-            <!-- editor-row end -->
-            <div class="editor-add-row">
-              <div class="editor-add-row-bar"></div>
-              <button type="button" class="btn-add-row"></button>
-            </div>
+            </template>
           </section>
           <!-- editor-row-wrap end -->
         </div>
@@ -497,10 +396,18 @@
           .srt, .ass, .vtt 포맷의 파일을 첨부합니다.
         </div>
         <div class="pop-modal-input-row">
-          <input type="file" class="subt-upload-file" />
+          <input
+            type="file"
+            accept=".srt, .ass, .vtt"
+            class="subt-upload-file"
+          />
         </div>
         <div class="pop-modal-bottom-btn-row">
-          <button type="button" class="btn-pop-modal-bottom submit">
+          <button
+            @click="upload"
+            type="button"
+            class="btn-pop-modal-bottom submit"
+          >
             저장
           </button>
           <button
@@ -576,7 +483,7 @@
     </div>
     <!-- pop-modal time-set end -->
     <!-- 시간 일괄조정 팝업 end -->
-    <div v-else-if="popup" class="pop-modal subt-upload">
+    <div v-else-if="popup" class="pop-modal">
       <div class="pop-modal-header">
         <h3 class="pop-modal-h3" v-text="popup.title" />
         <button
@@ -622,9 +529,10 @@ export default {
   components: {},
   data: () => ({
     popup: "",
-    data: null,
-    languageList: [],
-    language: {},
+    stream: {},
+    data: {},
+    languages: {},
+    tracks: [],
   }),
   methods: {
     alert(body, options = {}) {
@@ -640,18 +548,102 @@ export default {
         };
       });
     },
+    async load(language) {
+      const data = (
+        await this.$api(
+          `/addon/rest/autocaption/caption/edit;fileId=${this.data.fileId};language=${language}`
+        )
+      ).root;
+      this.tracks = this.$decode(data.tracks[0].track) || [];
+      this.tracks.sort((a, b) => a.rank - b.rank);
+      Object.assign(this.data, this.$decode(data));
+      this.data.tracks = this.tracks;
+      this.data.language = language;
+      this.$forceUpdate();
+    },
+    async save() {
+      if (!this.data.tracks) return this.alert("생성된자막이 없습니다.");
+      await this.$api("/addon/rest/autocaption/caption/save", {
+        captionList: this.data,
+      });
+      await this.alert("저장되었습니다.");
+    },
+    async publish() {
+      if (!this.data.tracks) return this.alert("생성된자막이 없습니다.");
+      const { fileId, language } = this.data;
+      await this.$api(
+        `/addon/rest/autocaption/caption/publish;fileId=${fileId};language=${language}`,
+        { fileId, language }
+      );
+      await this.alert("게시되었습니다.");
+    },
+    async autocaption() {
+      const { fileId, language } = this.data;
+      await this.$api(
+        `/addon/rest/autocaption/job/add/${fileId};language=${language}`,
+        { fileId, language }
+      );
+      await this.alert("자막생성을 요청하였습니다.");
+      window.close();
+    },
+    async upload() {
+      const { files } = this.$el.querySelector("input[type=file]");
+      if (!files || files.length < 1) return this.alert("파일을 선택해주세요.");
+      const { fileId, language } = this.data;
+      const formData = new FormData();
+      formData.headers = { "Content-Type": "multipart/form-data" };
+      formData.append("fileId", fileId);
+      formData.append("language", language);
+      formData.append("trackName", this.languages[language]);
+      formData.append("state", 1);
+      formData.append("createId", this.languages[language]);
+      formData.append("file", files[0]);
+      await this.$api(`/rest/file/uploadCaption/${fileId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        // onUploadProgress: (ev) => {
+        //   f.progress = Math.round((ev.loaded * 100) / ev.total) + "%";
+        //   this.setProg();
+        // },
+      });
+      return this.load(language);
+    },
   },
   async created() {
-    this.languageList = this.$decode(
+    const query = {};
+    location.href
+      .split("?")
+      .pop()
+      .split("&")
+      .forEach(
+        (q) => (query[q.split("=")[0]] = decodeURIComponent(q.split("=")[1]))
+      );
+    const { fileId, createId, language } = query;
+    if (!fileId || !createId) {
+      await this.alert("파라미터를 확인하세요");
+      return window.close();
+    }
+    this.data.fileId = fileId;
+    this.data.createId = createId;
+    const languageList = this.$decode(
       (await this.$api("/addon/rest/autocaption/caption/languageList")).root
         .languageList[0].language
     );
-    if (this.languageList.length) this.language = this.languageList[0];
+    languageList.forEach((l) => (this.languages[l.code] = l.name));
+    if (language) await this.load(language);
+    else if (languageList.length) this.data.language = languageList[0].code;
+    const { root } = await this.$api(
+      `rest/file2/stream/${this.data.fileId};protocol=http`
+    );
+    this.stream = this.$decode(root.vodList[0].vod[0].streamList[0].stream[0]);
+    this.$forceUpdate();
   },
 };
 </script>
 <style>
 .pop-modal {
   display: block;
+}
+.editor-time-stamp {
+  max-width: 86px;
 }
 </style>
