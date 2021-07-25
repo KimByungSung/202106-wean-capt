@@ -101,8 +101,13 @@
               />
               전체삭제
             </button>
-            <button type="button" class="btn-editor-top-more"></button>
-            <div class="editor-top-more-wrap">
+            <button
+              type="button"
+              @click="onMore = !onMore"
+              :class="{ on: onMore }"
+              class="btn-editor-top-more"
+            ></button>
+            <div v-if="onMore" class="editor-top-more-wrap">
               <button
                 type="button"
                 class="btn-more-option"
@@ -441,13 +446,25 @@
           .srt, .ass, .vtt 포맷의 파일을 다운로드 합니다.
         </div>
         <div class="pop-modal-input-row">
-          <select class="subt-download-select">
+          <select class="subt-download-select" v-model="downloadType">
             <option>.srt</option>
             <option>.ass</option>
             <option>.vtt</option>
             <option>.smi</option>
           </select>
-          <button type="button" class="btn-subt-download">저장</button>
+          <a
+            type="button"
+            :download="
+              data.fileTitle &&
+              data.fileTitle.slice(0, data.fileTitle.lastIndexOf('.')) +
+                downloadType
+            "
+            :href="`/rest/file/downTrack2/${data.fileId};language=${
+              data.language
+            };fileType=${downloadType.slice(1)}`"
+            class="btn-subt-download"
+            >저장</a
+          >
           <div class="clear-div"></div>
         </div>
       </div>
@@ -533,6 +550,8 @@ export default {
     data: {},
     languages: {},
     tracks: [],
+    onMore: false,
+    downloadType: ".srt",
   }),
   methods: {
     alert(body, options = {}) {
@@ -650,7 +669,8 @@ export default {
 };
 </script>
 <style>
-.pop-modal {
+.pop-modal,
+.editor-top-more-wrap {
   display: block;
 }
 .editor-time-stamp {
