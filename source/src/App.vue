@@ -60,7 +60,7 @@
             <button
               type="button"
               class="btn-add-subt manual-edting"
-              @click="load(data.language)"
+              @click="load(data)"
             >
               <div class="icon-btn-add-subt">
                 <img src="/html/image/icon-manual-edting.svg" />
@@ -548,7 +548,8 @@ export default {
         };
       });
     },
-    async load(language) {
+    async load(origin = {}) {
+      const { fileId, language } = origin;
       const data = (
         await this.$api(
           `/addon/rest/autocaption/caption/edit;fileId=${this.data.fileId};language=${language}`
@@ -558,6 +559,7 @@ export default {
       this.tracks.sort((a, b) => a.rank - b.rank);
       Object.assign(this.data, this.$decode(data));
       this.data.tracks = this.tracks;
+      this.data.fileId = fileId;
       this.data.language = language;
       this.$forceUpdate();
     },
@@ -605,7 +607,7 @@ export default {
         //   this.setProg();
         // },
       });
-      return this.load(language);
+      return this.load(this.data);
     },
   },
   async created() {
@@ -629,12 +631,20 @@ export default {
         .languageList[0].language
     );
     languageList.forEach((l) => (this.languages[l.code] = l.name));
-    if (language) await this.load(language);
-    else if (languageList.length) this.data.language = languageList[0].code;
+    if (language) {
+      this.data.language = language;
+      await this.load(this.data);
+    } else if (languageList.length) this.data.language = languageList[0].code;
     const { root } = await this.$api(
       `rest/file2/stream/${this.data.fileId};protocol=http`
     );
-    this.stream = this.$decode(root.vodList[0].vod[0].streamList[0].stream[0]);
+    try {
+      this.stream = this.$decode(
+        root.vodList[0].vod[0].streamList[0].stream[0]
+      );
+    } catch (e) {
+      console.error(e);
+    }
     this.$forceUpdate();
   },
 };

@@ -9,13 +9,14 @@ Number.prototype.pad = function (size) {
 
 export default {
   methods: {
-    async $api(url, data, opt = {}) {//, errors = {}) {
+    async $api(url, data, opt = {}, errors = {}) {
       const method = data ? 'post' : 'get';
       // if (method == 'post')
       //   opt.headers = { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' };
       const res = await axios({ method, url, data, ...opt }).catch(e => {
         console.log('axios err:', e.response);
-        this.$alert('서버와의 통신에 실패하였습니다.');
+        if (errors[e.response.status] !== '')
+          this.$alert(errors[e.response.status] || '서버와의 통신에 실패하였습니다.');
         throw e;
       });
 
