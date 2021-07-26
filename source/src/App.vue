@@ -107,7 +107,11 @@
               :class="{ on: onMore }"
               class="btn-editor-top-more"
             ></button>
-            <div v-if="onMore" class="editor-top-more-wrap">
+            <div
+              v-if="onMore"
+              @click="onMore = false"
+              class="editor-top-more-wrap"
+            >
               <button
                 type="button"
                 class="btn-more-option"
@@ -515,7 +519,7 @@
       <div class="pop-modal-body">
         <div
           class="pop-modal-label"
-          style="text-align: center; padding: 1em"
+          style="text-align: center; padding: 1em; line-height: 2"
           v-html="popup.body"
         />
         <div class="pop-modal-bottom-btn-row">
@@ -604,7 +608,9 @@ export default {
         `/addon/rest/autocaption/job/add/${fileId};language=${language}`,
         { fileId, language }
       );
-      await this.alert("자막생성을 요청하였습니다.");
+      await this.alert(
+        "자막생성을 요청하였습니다.<br>자동 자막은 생성시간이 다소 소요되어, 잠시 후 자막언어 (자동생성)으로 편집 진행하시기 바랍니다."
+      );
       window.close();
     },
     async upload() {
