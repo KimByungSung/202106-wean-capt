@@ -1,0 +1,38 @@
+.pop-modal,
+.editor-top-more-wrap {
+  display: block;
+}
+.pop-modal-label.common{
+  text-align: center;
+  padding: 1em;
+  line-height: 2;
+  word-break: break-all;
+}
+.editor-time-stamp {
+  max-width: 86px;
+}
+.video-js>div{
+  display: none;
+}
+video {
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+.wac-controls-progress {
+  height: 6px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.timeline-marker {
+  margin-left: -7px;
+  pointer-events: none;
+  /* transition: left .6s; */
+}
+.time-stamp {
+  pointer-events: none;
+}
+.subt-txt {
+  position: absolute;
+  float: none;
+}

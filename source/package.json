@@ -13,6 +13,8 @@
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.6.5",
     "vue": "^2.6.14",
+    "vue-video-player": "^5.0.2",
+    "vue-videojs7": "^1.0.2",
     "vuex": "^3.6.2",
     "vuex-persistedstate": "^4.0.0",
     "xml-to-json-promise": "0.0.3"

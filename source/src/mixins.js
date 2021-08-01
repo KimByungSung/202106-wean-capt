@@ -1,6 +1,13 @@
 import axios from 'axios';
 import xml from 'xml-to-json-promise';
-const decode = d => decodeURIComponent(Array.isArray(d) ? d[0] : d).replace(/\+/g, ' ');
+const decode = d => {
+  try {
+    return decodeURIComponent(Array.isArray(d) ? d[0] : d).replace(/\+/g, ' ');
+  } catch (e) {
+    console.log(e, d);
+    return d;
+  }
+}
 Number.prototype.pad = function (size) {
   var s = String(this);
   while (s.length < (size || 2)) s = '0' + s;
@@ -46,12 +53,21 @@ export default {
     $alert(body, options) {
       return window.$vm.$children[0].alert(body, options);
     },
-    $toTime(ms) {
-      return `${Math.floor(ms / 3600000)}:${Math.floor(ms % 3600000 / 60000)}:${Math.floor(ms % 60000 / 1000)}.${ms % 1000}`
+    async $confirm(msg, cb) {
+      if (await this.$alert(msg)) cb();
     },
-    $toMs(time) {
+    $delay(timeout) {
+      return new Promise((resolve) => setTimeout(resolve, timeout));
+    },
+    $toTime(ms = 0, showMilli) {
+      return showMilli ? `${Math.floor(ms / 3600000)}:${Math.floor(ms % 3600000 / 60000).pad(2)}:${Math.floor(ms % 60000 / 1000).pad(2)}.${(ms % 1000).pad(3)}`
+        : `${Math.floor(ms / 3600000)}:${Math.floor(ms % 3600000 / 60000).pad(2)}:${Math.floor(ms % 60000 / 1000).pad(2)}`;
+    },
+    $toMs(time = '', ref, field) {
       time = time.split(':');
-      return Math.round(time[0] * 3600000 + time[1] * 60000 + time[2] * 1000);
+      const r = time.length == 3 && Math.round(time[0] * 3600000 + time[1] * 60000 + time[2] * 1000);
+      if (!r || isNaN(r)) return this.$alert('시간형식(H:MM:SS.000)을 확인해주세요.');
+      else return ref[field] = r;
     },
     $decode(d) {
       if (Array.isArray(d)) d.forEach(d => { for (let k in d) d[k] = decode(d[k]) });
