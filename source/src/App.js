@@ -7,6 +7,7 @@ export default {
     languages: {},
     tracks: [],
     currentTrack: null,
+    sel: null,
     onMore: false,
     downloadType: ".srt",
     player: {},
@@ -15,7 +16,7 @@ export default {
     history: [],
     historyIndex: 0,
     trackPosRate: 1,
-    zoom: 50
+    zoom: 0
   }),
   methods: {
     alert(body, options = {}) {
@@ -114,12 +115,11 @@ export default {
       this.tracks = JSON.parse(h);
     },
     addTrack(i) {
-      console.log(i)
       const before = this.tracks[i] || { rank: 0, endTime: 0 };
       this.tracks.splice(i + 1, 0, {
         rank: before.rank + 1,
         startTime: before.endTime,
-        endTime: before.endTime + 10000,
+        endTime: before.endTime * 1 + 10000,
         text: '',
       });
       this.tracks.slice(i + 2).forEach(t => t.rank++);
@@ -134,8 +134,8 @@ export default {
     },
     trackPos(t) {
       return {
-        left: t.startTime * this.trackPosRate + 'px',
-        width: (t.endTime - t.startTime) * this.trackPosRate + 'px'
+        left: t.startTime / 10 / this.video.duration + '%',
+        width: (t.endTime - t.startTime) / 10 / this.video.duration + '%'
       }
     },
     setTrackPosRate() {
@@ -150,7 +150,77 @@ export default {
       window.onbeforeunload = null;
       if (window.opener) window.close();
       else window.history.back();
-    }
+    },
+    start(e) {
+      if (e.target.className == 'subt-txt') this.sel = e.target;
+      else return;
+      // console.log(this.sel.offsetLeft, e.offsetX)
+      // if (!this.focus) return;
+      // const el = lastEvt.target;
+      // lastEvt = { pageX: e.pageX, timeStamp: e.timeStamp };
+      // if (el.className == "side")
+      //   lastEvt.side = el.style.left ? "left" : "right";
+      // console.log(e.pageX, e.layerX, e.target.offsetLeft);
+    },
+    move() {
+      // if (!this.focus) return;
+      // let d = (e.pageX - lastEvt.pageX) / this.canvasW;
+      // if (lastEvt.side == "left") {
+      //   if (d * 100 > this.focus.width) return;
+      //   this.focus.widthTmp = this.focus.width - d * 100;
+      // } else if (lastEvt.side == "right")
+      //   return (this.focus.widthTmp = this.focus.width + d * 100);
+      // this.focus.leftTmp = this.focus.left + d * 100 + "%";
+    },
+    end() {
+      // if (!this.focus) return;
+      // if (!this.focus || e.timeStamp - lastEvt.timeStamp < 200) {
+      //   if (this.focus) {
+      //     this.focus.widthTmp = null;
+      //     this.focus.leftTmp = null;
+
+      //     if (this.focus.data.aFileId);
+      //     // hwado 팝업을 더블클릭으로 변경
+      //     //else if (this.focus.data.text) this.textPop = this.focus.data;
+      //   }
+      //   return (this.focus = null);
+      // }
+      // this.addHistory();
+      // if (lastEvt.side) {
+      //   const duration = Math.max(
+      //     50,
+      //     Math.min(
+      //       this.sel.totalTime,
+      //       Math.round(this.focus.widthTmp * this.duration)
+      //     )
+      //   );
+      //   this.sel.duration = duration;
+      //   if (lastEvt.side == "left") {
+      //     this.sel.insertTime +=
+      //       this.sel.endTime - this.sel.startTime - duration;
+      //     this.sel.startTime = this.sel.endTime - duration || 1;
+      //   } else this.sel.endTime = this.sel.startTime + duration;
+      // } else
+      //   this.sel.insertTime = Math.max(
+      //     0,
+      //     Math.round(this.focus.leftTmp.slice(0, -1) * this.duration)
+      //   );
+      // this.focus.widthTmp = null;
+      // this.focus.leftTmp = null;
+      // this.focus = null;
+      // const { clipType } = this.sel;
+      // this.adjust(this.prjInfo.segment.filter((s) => s.clipType == clipType));
+      // //텍스트, 더빙 레이어도 겹치지 않도록
+      // this.adjust(this.prjInfo.title);
+      // this.adjust(this.prjInfo.dubbing);
+
+      // //세그먼트 이동 시 미리보기에 반영되도록 추가
+      // this.player.onProgressBar(this.clipTime || 0, false);
+      // //세그먼트 이동 시 미리보기에 반영되도록 추가
+    },
+  },
+  watch: {
+    zoom: "setTrackPosRate"
   },
   async created() {
     const query = {};
@@ -200,7 +270,7 @@ export default {
   async mounted() {
     this.video = this.$refs.video || { playbackRate: 1 };
     this.video.ontimeupdate = () => this.tick();
-    this.video.onloadedmetadata = () => this.setTrackPosRate();
+    this.video.onloadedmetadata = () => this.$forceUpdate();
     this.player = window.videojs(this.video);
     this.player.on('error', async (e) => {
       console.log('videojs error', e)

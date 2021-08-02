@@ -23,7 +23,14 @@
             자막게시
           </button>
         </div>
-        <button @click="winClose" type="button" class="wac-pop-close" title="닫기">닫기</button>
+        <button
+          @click="winClose"
+          type="button"
+          class="wac-pop-close"
+          title="닫기"
+        >
+          닫기
+        </button>
       </header>
       <section class="wac-body">
         <div class="wac-editor" v-if="!data.tracks">
@@ -207,6 +214,7 @@
                 <div class="editor-input">
                   <textarea
                     v-model="t.text"
+                    @change="addHistory"
                     class="editor-input-text"
                     placeholder="추가하실 자막 내용을 입력해주세요."
                   ></textarea>
@@ -357,7 +365,7 @@
         <div class="wac-timeline-top">
           <div class="wac-timeline-top-btn-wrap">
             <button
-              @ckick="goHistory(-1)"
+              @click="goHistory(1)"
               type="button"
               class="btn-wac-timeline-top"
             >
@@ -368,7 +376,7 @@
               실행취소
             </button>
             <button
-              @ckick="goHistory(1)"
+              @click="goHistory(-1)"
               type="button"
               class="btn-wac-timeline-top"
             >
@@ -396,16 +404,19 @@
               <button
                 @click="
                   () => {
-                    if (zoom < 100) zoom += 25;
+                    if (zoom < 3) zoom++;
                   }
                 "
                 type="button"
                 class="btn-zoom zoom-in"
               ></button>
               <div class="zoom-control-bar" name="zoom-2">
-                <div :style="{ width: zoom + '%' }" class="bar-range"></div>
                 <div
-                  :style="{ left: `calc(${zoom}% - 6px)` }"
+                  :style="{ width: zoom * 25 + '%' }"
+                  class="bar-range"
+                ></div>
+                <div
+                  :style="{ left: `calc(${zoom * 25}% - 6px)` }"
                   class="bar-dot"
                 ></div>
                 <div class="bar-point p00"></div>
@@ -418,7 +429,7 @@
               <button
                 @click="
                   () => {
-                    if (zoom) zoom -= 25;
+                    if (zoom) zoom--;
                   }
                 "
                 type="button"
@@ -439,46 +450,56 @@
         <!-- col-left end -->
         <div class="col-right">
           <div
-            class="timeline-marker"
-            :style="{ left: (video.currentTime * 100) / video.duration + '%' }"
+            @mousedown="start($event)"
+            @mousemove="move($event)"
+            @mouseleave="end($event)"
+            @mouseup="end($event)"
+            :style="{ width: ['100%', '150%', '200%', '300%'][zoom] }"
           >
-            <div class="timeline-marker-ui">
-              <div class="timeline-marker-head"></div>
-              <div
-                class="timeline-cursor-time"
-                v-text="$toTime(Math.round(video.currentTime * 1000))"
-              />
-              <div class="timeline-marker-line"></div>
-            </div>
-          </div>
-          <div
-            @click="
-              video.currentTime =
-                ($event.offsetX / $event.target.offsetWidth) * video.duration
-            "
-            class="row-right row-timeline"
-          >
-            <div class="time-stamp">0:00:00</div>
-            <div class="time-stamp">0:10:00</div>
-            <div class="time-stamp">0:20:00</div>
-            <div class="time-stamp">0:30:00</div>
-            <div class="time-stamp last">0:40:00</div>
-          </div>
-          <!-- row-right row-timeline end -->
-          <div class="row-right row-subt">
             <div
-              :key="i"
-              v-for="(t, i) in tracks"
-              v-text="t.text"
-              :title="t.text"
-              :style="trackPos(t)"
-              :class="{ active: t == currentTrack }"
-              class="subt-txt"
-            />
+              class="timeline-marker"
+              :style="{
+                left: (video.currentTime * 100) / video.duration + '%',
+              }"
+            >
+              <div class="timeline-marker-ui">
+                <div class="timeline-marker-head"></div>
+                <div
+                  class="timeline-cursor-time"
+                  v-text="$toTime(Math.round(video.currentTime * 1000))"
+                />
+                <div class="timeline-marker-line"></div>
+              </div>
+            </div>
+            <div
+              @click="
+                video.currentTime =
+                  ($event.offsetX / $event.target.offsetWidth) * video.duration
+              "
+              class="row-right row-timeline"
+            >
+              <div class="time-stamp">0:00:00</div>
+              <div class="time-stamp">0:10:00</div>
+              <div class="time-stamp">0:20:00</div>
+              <div class="time-stamp">0:30:00</div>
+              <div class="time-stamp last">0:40:00</div>
+            </div>
+            <!-- row-right row-timeline end -->
+            <div class="row-right row-subt">
+              <div
+                :key="i"
+                v-for="(t, i) in tracks"
+                v-text="t.text"
+                :title="t.text"
+                :style="trackPos(t)"
+                :class="{ active: t == currentTrack }"
+                class="subt-txt"
+              />
+            </div>
+            <!-- row-right row-subt end -->
+            <!-- <div class="row-right row-audio"></div> -->
+            <!-- row-right row-audio end -->
           </div>
-          <!-- row-right row-subt end -->
-          <!-- <div class="row-right row-audio"></div> -->
-          <!-- row-right row-audio end -->
         </div>
         <!-- col-right end -->
         <div class="clear-div"></div>

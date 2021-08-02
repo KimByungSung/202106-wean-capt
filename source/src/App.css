@@ -36,3 +36,6 @@ video {
   position: absolute;
   float: none;
 }
+.col-right {
+  overflow-x: auto;
+}

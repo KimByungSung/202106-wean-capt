@@ -66,7 +66,7 @@ export default {
     $toMs(time = '', ref, field) {
       time = time.split(':');
       const r = time.length == 3 && Math.round(time[0] * 3600000 + time[1] * 60000 + time[2] * 1000);
-      if (!r || isNaN(r)) return this.$alert('시간형식(H:MM:SS.000)을 확인해주세요.');
+      if (r === false || isNaN(r)) return this.$alert('시간형식(H:MM:SS.000)을 확인해주세요.');
       else return ref[field] = r;
     },
     $decode(d) {
