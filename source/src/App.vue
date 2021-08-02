@@ -1,5 +1,5 @@
 <template>
-  <body @resize="setTrackPosRate">
+  <body>
     <div class="bg-alpha" :style="{ zIndex: popup ? 91 : 0 }"></div>
     <div id="auto-caption-popup">
       <header class="wac-header">
@@ -23,7 +23,7 @@
             자막게시
           </button>
         </div>
-        <button type="button" class="wac-pop-close" title="닫기">닫기</button>
+        <button @click="winClose" type="button" class="wac-pop-close" title="닫기">닫기</button>
       </header>
       <section class="wac-body">
         <div class="wac-editor" v-if="!data.tracks">
@@ -229,7 +229,7 @@
         <div class="wac-player">
           <div class="wac-video-wrap">
             <div class="wac-video-container">
-              <video ref="video" class="wac-video video-js" />
+              <video ref="video" class="wac-video" />
               <!-- <video-player ref="videoPlayer" :options="{}" class="wac-video" /> -->
               <div class="wac-subtitle-wrap" v-if="currentTrack">
                 <div class="wac-subtitles" v-text="currentTrack.text" />

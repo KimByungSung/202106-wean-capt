@@ -53,7 +53,6 @@ export default {
       if (!this.data.tracks) return this.alert("생성된자막이 없습니다.");
       this.data.tracks = this.tracks;
       this.data.totalCnt = this.tracks.length;
-      // this.data.trackType = this.data.trackType || 'srt';
       await this.$api("/addon/rest/autocaption/caption/save", {
         captionList: this.data,
       }, {
@@ -95,10 +94,7 @@ export default {
       formData.append("file", files[0]);
       await this.$api(`/rest/file/uploadCaption/${fileId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
-        // onUploadProgress: (ev) => {
-        //   f.progress = Math.round((ev.loaded * 100) / ev.total) + "%";
-        //   this.setProg();
-        // },
+        // onUploadProgress: (ev) => progress = Math.round((ev.loaded * 100) / ev.total) + "%"
       });
       this.$alert();
       return this.load(this.data);
@@ -149,6 +145,11 @@ export default {
       const c = this.video.currentTime * 1000;
       this.currentTrack = this.tracks.find(t => t.startTime < c && t.endTime > c);
       this.$forceUpdate()
+    },
+    winClose() {
+      window.onbeforeunload = null;
+      if (window.opener) window.close();
+      else window.history.back();
     }
   },
   async created() {
@@ -204,6 +205,8 @@ export default {
       console.log('videojs error', e)
       await this.$alert('videojs 오류입니다.<br>' + this.player.src());
     });
+    window.onresize = () => this.setTrackPosRate();
+    window.onbeforeunload = () => '저장하지 않은 정보가 손실될 수 있습니다. 이동하시겠습니까?';
   },
   beforeDestroy() {
     if (this.player.dispose) this.player.dispose()
