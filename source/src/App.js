@@ -1,5 +1,3 @@
-import videojs from 'video.js';
-
 export default {
   name: "App",
   components: {},
@@ -58,6 +56,8 @@ export default {
       // this.data.trackType = this.data.trackType || 'srt';
       await this.$api("/addon/rest/autocaption/caption/save", {
         captionList: this.data,
+      }, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }
       });
       await this.alert("저장되었습니다.");
     },
@@ -186,29 +186,23 @@ export default {
       if (!src) src = this.$decode(
         root.vodList[0].vod[0].streamList[0].stream[0]
       ).file;
-      this.player.src(src);
-      // this.player.src({
-      //   withCredentials: false,
-      //   type: 'application/x-mpegurl',
-      //   src
-      // });
+      this.player.src({
+        type: 'application/x-mpegURL',
+        src
+      });
     } catch (e) {
       console.error(e);
-      // this.video.src = "https://www.w3schools.com/html/mov_bbb.mp4";
     }
     this.$forceUpdate();
   },
   async mounted() {
-    window.video = this.video = this.$refs.video || { playbackRate: 1 };
-    // window.video = this.video = this.$el.querySelector('video') || { playbackRate: 1 };
+    this.video = this.$refs.video || { playbackRate: 1 };
     this.video.ontimeupdate = () => this.tick();
     this.video.onloadedmetadata = () => this.setTrackPosRate();
-    window.player = this.player = videojs(this.video);
-    // this.player = this.$refs.videoPlayer.player;
+    this.player = window.videojs(this.video);
     this.player.on('error', async (e) => {
-      console.log(e)
+      console.log('videojs error', e)
       await this.$alert('videojs 오류입니다.<br>' + this.player.src());
-      this.player.src("https://www.w3schools.com/html/mov_bbb.mp4");
     });
   },
   beforeDestroy() {

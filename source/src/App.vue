@@ -276,14 +276,14 @@
                     play
                   </button>
                   <button
-                    @click="video.currentTime -= 1"
+                    @click="video.currentTime -= 5"
                     type="button"
                     class="wac-controls-btn rewind"
                   >
                     prev
                   </button>
                   <button
-                    @click="video.currentTime += 1"
+                    @click="video.currentTime += 5"
                     type="button"
                     class="wac-controls-btn forward"
                   >
