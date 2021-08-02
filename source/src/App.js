@@ -180,14 +180,18 @@ export default {
       `rest/file2/stream/${this.data.fileId};protocol=http`
     );
     try {
-      const { file: src } = this.$decode(
+      let { thumbnail, smilFile: src } = this.$decode(root.vodList[0].vod[0]);
+      console.log({ thumbnail, src })
+      this.video.poster = thumbnail;
+      if (!src) src = this.$decode(
         root.vodList[0].vod[0].streamList[0].stream[0]
-      );
-      this.player.src({
-        withCredentials: false,
-        type: 'application/x-mpegurl',
-        src
-      });
+      ).file;
+      this.player.src(src);
+      // this.player.src({
+      //   withCredentials: false,
+      //   type: 'application/x-mpegurl',
+      //   src
+      // });
     } catch (e) {
       console.error(e);
       // this.video.src = "https://www.w3schools.com/html/mov_bbb.mp4";
