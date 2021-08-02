@@ -77,7 +77,7 @@ export default {
       await this.alert(
         "자막생성을 요청하였습니다.<br>자동 자막은 생성시간이 다소 소요되어, 잠시 후 자막언어 (자동생성)으로 편집 진행하시기 바랍니다."
       );
-      window.close();
+      this.winClose();
     },
     async upload() {
       const { files } = this.$el.querySelector("input[type=file]");
@@ -144,7 +144,7 @@ export default {
     tick() {
       const c = this.video.currentTime * 1000;
       this.currentTrack = this.tracks.find(t => t.startTime < c && t.endTime > c);
-      this.$forceUpdate()
+      this.$forceUpdate();
     },
     winClose() {
       window.onbeforeunload = null;
@@ -164,7 +164,7 @@ export default {
     const { fileId, createId, language } = query;
     if (!fileId || !createId) {
       await this.alert("파라미터를 확인하세요");
-      return window.close();
+      return this.winClose();
     }
     this.data.fileId = fileId;
     this.data.createId = createId;
@@ -182,7 +182,6 @@ export default {
     );
     try {
       let { thumbnail, smilFile: src } = this.$decode(root.vodList[0].vod[0]);
-      console.log({ thumbnail, src })
       this.video.poster = thumbnail;
       if (!src) src = this.$decode(
         root.vodList[0].vod[0].streamList[0].stream[0]
@@ -192,7 +191,9 @@ export default {
         src
       });
     } catch (e) {
-      console.error(e);
+      console.error('stream정보', e);
+      await this.alert("동영상정보를 확인할 수 없습니다.");
+      this.winClose();
     }
     this.$forceUpdate();
   },
