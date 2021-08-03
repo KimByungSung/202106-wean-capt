@@ -54,11 +54,15 @@ export default {
       if (!this.data.tracks) return this.alert("생성된자막이 없습니다.");
       this.data.tracks = this.tracks;
       this.data.totalCnt = this.tracks.length;
-      await this.$api("/addon/rest/autocaption/caption/save", {
-        captionList: this.data,
-      }, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }
-      });
+      const { fileId, language, createId } = this.data;
+      await this.$api("/addon/rest/autocaption/caption/save",
+        // 1. 최종 맞다고 판단되는 방식입니다.
+        // 'captionList=' + encodeURIComponent(JSON.stringify(this.data)),
+        // 2. 인코딩을 빼고 혹시몰라 데이터도 샘플과 동일하게 간소화했습니다
+        'captionList=' + JSON.stringify({
+          fileId, language, createId, tracks: { rank: "0", startTime: "10000", endTime: "20000", text: "테스트" }
+        }),
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' } });
       await this.alert("저장되었습니다.");
     },
     async publish() {
