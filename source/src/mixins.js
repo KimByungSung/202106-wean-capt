@@ -41,10 +41,10 @@ export default {
       //   // } else window.close();
       // }
       if (res.headers['content-type'] == 'text/xml') {
-        const ret = xml.xmlDataToJSON(res.data);
-        if (ret.root && ret.root.ResultCode != '0000' && res.root.ResultMessage) {
-          await this.$alert(res.root.ResultMessage);
-          throw res.root.ResultMessage;
+        const ret = await xml.xmlDataToJSON(res.data);
+        if (ret.root && ret.root.resultCode && ret.root.resultCode[0] != '0000') {
+          await this.$alert(ret.root.resultMessage[0]);
+          throw ret.root.resultMessage[0];
         }
         return ret
       }
